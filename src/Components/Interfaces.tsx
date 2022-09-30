@@ -20,5 +20,5 @@ export interface Request{
     dateCreated: string,
     startDate:string,
     endDate:string,
-    car: Car
+    car?: Car
 }

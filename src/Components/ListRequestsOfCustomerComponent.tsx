@@ -20,7 +20,7 @@ const ListRequestsOfCustomerComponent = () => {
                 console.log("---------")
                 console.log(requests)
             }).catch((e: any) => console.log(e))
-            , []
+                , []
         }
 
     }
@@ -84,9 +84,12 @@ export const GetCar = (props: Props) => {
     })
 
     useEffect(() => {
-        CarService.getCarById(props.request.car.id).then((Response: any) => {
-            setCar(Response.data)
-        }).catch((e: string) => console.log(e))
+        if (props.request.car) {
+            CarService.getCarById(props.request.car.id).then((Response: any) => {
+                setCar(Response.data)
+            }).catch((e: string) => console.log(e))
+        }
+
     }, [])
 
     switch (props.show) {

@@ -12,7 +12,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers-pro';
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import { DateRange } from '@mui/x-date-pickers-pro/DateRangePicker';
-import Car, { Customer } from './Interfaces';
+import Car, { Customer, Request } from './Interfaces';
 
 
 export function BasicDateRangePicker() {
@@ -41,8 +41,6 @@ export function BasicDateRangePicker() {
   );
 }
 
-
-
 const MakeRequestComponent = () => {
 
   const { carId } = useParams();
@@ -64,7 +62,13 @@ const MakeRequestComponent = () => {
     email: '',
     credit: 0
   });
-  const [request, setRequest] = useState({})
+  const [request, setRequest] = useState<Request>({
+    id:-1,
+    status:'',
+    dateCreated: '',
+    startDate:'',
+    endDate:''
+  })
 
 
   const submitChange = (e: React.MouseEvent<HTMLElement>) => {
@@ -85,17 +89,21 @@ const MakeRequestComponent = () => {
 
 
   useEffect(() => {
-    CarService.getCarById(carId).then((Response: any) => {
-      setCar(Response.data);// it's not good to set the car obj of request here, if the below CustomerService did the same thing
-      console.log("+++car: " + JSON.stringify(car) + " response data: " + Response.data)
-    }).catch((e: string) => console.log(e))
+    if(carId){
+      CarService.getCarById(parseInt(carId)).then((Response: any) => {
+        setCar(Response.data);// it's not good to set the car obj of request here, if the below CustomerService did the same thing
+        console.log("+++car: " + JSON.stringify(car) + " response data: " + Response.data)
+      }).catch((e: string) => console.log(e))
+    }
 
-    CustomerService.getCustomerById(customerId).then((Response: any) => {
-      setCustomer(Response.data);// it's not good to set the customer obj of request here, if the above CarService did the same thing. 
-      //Why? Two async fucntion modifying the same state isn't a good idea, I believe
-      console.log("+++customer: " + JSON.stringify(customer) + " response data: " + Response.data)
-    }).catch((e: string) => console.log(e))
+    if (customerId){
+      CustomerService.getCustomerById(parseInt(customerId)).then((Response: any) => {
+        setCustomer(Response.data);// it's not good to set the customer obj of request here, if the above CarService did the same thing. 
+        //Why? Two async fucntion modifying the same state isn't a good idea, I believe
+        console.log("+++customer: " + JSON.stringify(customer) + " response data: " + Response.data)
+      }).catch((e: string) => console.log(e))
 
+    }
   }, [])
 
 
