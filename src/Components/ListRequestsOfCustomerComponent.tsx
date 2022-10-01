@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import { useState, useEffect, Suspense, useRef } from 'react'
@@ -13,19 +14,14 @@ const ListRequestsOfCustomerComponent = () => {
 
 
     useEffect(() => {
-        console.log("id: " + id)
         if (id) {
-            RequestService.getRequestsOfCustomer(parseInt(id)).then((Response: any) => {// CAN'T pass {id} to the function
-                setRequests(Response.data);
-                console.log("---------")
-                console.log(requests)
-            }).catch((e: any) => console.log(e))
-                , []
+            RequestService.getRequestsOfCustomer(parseInt(id)).
+                then((Response: any) => {
+                    setRequests(Response.data);
+                }).catch((e: any) => console.log(e))
         }
+    }, [])
 
-    }
-
-    )
     return (
         <div className="container">
             <table className="table table-striped">
@@ -86,7 +82,7 @@ export const GetCar = (props: Props) => {
     useEffect(() => {
         if (props.request.car) {
             CarService.getCarById(props.request.car.id).then((Response: any) => {
-                setCar(Response.data)
+                setCar(Response.data);
             }).catch((e: string) => console.log(e))
         }
 

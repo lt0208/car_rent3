@@ -4,46 +4,20 @@ import CarService from '../services/CarService';
 import CustomerService from '../services/CustomerService';
 import RequestService from '../services/RequestService';
 import * as React from 'react';
+import Car, { Customer, Request } from './Interfaces';
 
 import { Dayjs } from 'dayjs';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import { LocalizationProvider } from '@mui/x-date-pickers-pro';
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
-import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
-import { DateRange } from '@mui/x-date-pickers-pro/DateRangePicker';
-import Car, { Customer, Request } from './Interfaces';
+import { DateRangePicker, DateRange } from '@mui/x-date-pickers-pro/DateRangePicker';
 
-
-export function BasicDateRangePicker() {
-  const [value, setValue] = React.useState<DateRange<Dayjs>>([null, null]);
-
-
-  return (
-    <LocalizationProvider
-      dateAdapter={AdapterDayjs}
-      localeText={{ start: 'Start Date', end: 'End Date' }}
-    >
-      <DateRangePicker
-        value={value}
-        onChange={(newValue) => {
-          setValue(newValue);
-        }}
-        renderInput={(startProps, endProps) => (
-          <React.Fragment>
-            <TextField {...startProps} />
-            <Box sx={{ mx: 2 }}> to </Box>
-            <TextField {...endProps} />
-          </React.Fragment>
-        )}
-      />
-    </LocalizationProvider>
-  );
-}
 
 const MakeRequestComponent = () => {
 
   const { carId } = useParams();
+  const [dateRange, setDateRange] = React.useState<DateRange<Dayjs>>([null, null]);
   const { customerId } = useParams();
   //console.log("carId " + carId + " customerId " + customerId)
   const navigate = useNavigate();
@@ -63,24 +37,16 @@ const MakeRequestComponent = () => {
     credit: 0
   });
   const [request, setRequest] = useState<Request>({
-    id:-1,
-    status:'',
+    id: -1,
+    status: '',
     dateCreated: '',
-    startDate:'',
-    endDate:''
+    startDate: '',
+    endDate: ''
   })
 
 
   const submitChange = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
-    /* console.log("---car: " + JSON.stringify(car) + "---customer: " + JSON.stringify(customer))
-    console.log("request status: " + request.status)
-    console.log("request start date: " + request.startDate)
-    console.log("request car: " + JSON.stringify(request.car))
-    console.log("request car id: " + request.car.id)
-    console.log("request customer: " + JSON.stringify(request.customer))
-    console.log("request customer id: " + request.customer.id) */
-
     RequestService.makeRequest(request).then((Response: any) => {
       console.log("request: " + JSON.stringify(request) + "response data  " + Response.data)
       navigate('/requests/customer/' + customerId)
@@ -89,14 +55,14 @@ const MakeRequestComponent = () => {
 
 
   useEffect(() => {
-    if(carId){
+    if (carId) {
       CarService.getCarById(parseInt(carId)).then((Response: any) => {
         setCar(Response.data);// it's not good to set the car obj of request here, if the below CustomerService did the same thing
         console.log("+++car: " + JSON.stringify(car) + " response data: " + Response.data)
       }).catch((e: string) => console.log(e))
     }
 
-    if (customerId){
+    if (customerId) {
       CustomerService.getCustomerById(parseInt(customerId)).then((Response: any) => {
         setCustomer(Response.data);// it's not good to set the customer obj of request here, if the above CarService did the same thing. 
         //Why? Two async fucntion modifying the same state isn't a good idea, I believe
@@ -117,8 +83,12 @@ const MakeRequestComponent = () => {
         <div>
 
           <h2>Car: {car.brand} - {car.model}</h2>
-          <BasicDateRangePicker />
+
         </div>
+        <div> Select Date Range
+        <BasicDateRangePicker dateRangeChild = {dateRange} setDateRangeChild = {setDateRange}/>
+        </div>
+        
 
         <button className='btn btn-primary' onClick={submitChange} >Submit</button>
 
@@ -127,4 +97,31 @@ const MakeRequestComponent = () => {
   )
 }
 
-export default MakeRequestComponent
+
+
+export function BasicDateRangePicker(props:any) {
+  
+
+  return (
+    <LocalizationProvider
+      dateAdapter={AdapterDayjs}
+      localeText={{ start: 'Start Date', end: 'End Date' }}
+    >
+      <DateRangePicker
+        value={props.dateRangeChild}
+        onChange={(newValue) => {
+          props.setDateRangeChild(newValue);
+        }}
+        renderInput={(startProps, endProps) => (
+          <React.Fragment>
+            <TextField {...startProps} />
+            <Box sx={{ mx: 2 }}> to </Box>
+            <TextField {...endProps} />
+          </React.Fragment>
+        )}
+      />
+    </LocalizationProvider>
+  );
+}
+
+export default MakeRequestComponent;
