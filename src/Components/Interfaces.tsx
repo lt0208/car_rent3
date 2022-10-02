@@ -1,5 +1,5 @@
 export default interface Car{
-     id:number,
+     id?:number,
      year:string,
      brand:string,
      model:string
@@ -7,7 +7,7 @@ export default interface Car{
 }
 
 export interface Customer{
-    id:number,
+    id?:number,
     firstName:string,
     lastName:string,
     email:string,
@@ -15,10 +15,12 @@ export interface Customer{
 }
 
 export interface Request{
-    id:number,
+    id?:number,
     status:string,
     dateCreated: string,
     startDate:string,
     endDate:string,
     car?: Car
+    customer?:Customer
 }
+// Be notes, the we used localDate class in Java, the formant is yyyy-mm-dd. so the format should be consistent

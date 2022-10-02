@@ -15,7 +15,7 @@ class RequestService {
         return axios.get(REQUESTS_REST_API_URL + "/customer/" + id) // You CAN'T wrap id with {},and CAN'T pass {id} either
     }
 
-    makeRequest(request:Request) {
+    makeRequest(request:any) {
         return axios.post(REQUESTS_REST_API_URL + "/make", request)
     }
 

@@ -14,10 +14,12 @@ const ListRequestsOfCustomerComponent = () => {
 
 
     useEffect(() => {
+        console.log("id: " + id)
         if (id) {
             RequestService.getRequestsOfCustomer(parseInt(id)).
                 then((Response: any) => {
-                    setRequests(Response.data);
+                    setRequests(Response.data)
+                    console.log(Response.data)
                 }).catch((e: any) => console.log(e))
         }
     }, [])
@@ -80,7 +82,7 @@ export const GetCar = (props: Props) => {
     })
 
     useEffect(() => {
-        if (props.request.car) {
+        if (props.request.car && props.request.car.id) {
             CarService.getCarById(props.request.car.id).then((Response: any) => {
                 setCar(Response.data);
             }).catch((e: string) => console.log(e))

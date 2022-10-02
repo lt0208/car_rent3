@@ -7,6 +7,7 @@ import * as React from 'react';
 import Car, { Customer, Request } from './Interfaces';
 
 import { Dayjs } from 'dayjs';
+
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import { LocalizationProvider } from '@mui/x-date-pickers-pro';
@@ -15,14 +16,13 @@ import { DateRangePicker, DateRange } from '@mui/x-date-pickers-pro/DateRangePic
 
 
 const MakeRequestComponent = () => {
-
-  const { carId } = useParams();
-  const [dateRange, setDateRange] = React.useState<DateRange<Dayjs>>([null, null]);
-  const { customerId } = useParams();
-  //console.log("carId " + carId + " customerId " + customerId)
   const navigate = useNavigate();
+  const { carId } = useParams();
+  const { customerId } = useParams();
+  const [dateRange, setDateRange] = React.useState<DateRange<Dayjs>>([null, null]);
+
+  //console.log("carId " + carId + " customerId " + customerId)
   const [car, setCar] = useState<Car>({
-    id: -1,
     year: '',
     brand: '',
     model: '',
@@ -30,14 +30,12 @@ const MakeRequestComponent = () => {
   });
 
   const [customer, setCustomer] = useState<Customer>({
-    id: -1,
     firstName: '',
     lastName: '',
     email: '',
     credit: 0
   });
   const [request, setRequest] = useState<Request>({
-    id: -1,
     status: '',
     dateCreated: '',
     startDate: '',
@@ -47,10 +45,25 @@ const MakeRequestComponent = () => {
 
   const submitChange = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
-    RequestService.makeRequest(request).then((Response: any) => {
-      console.log("request: " + JSON.stringify(request) + "response data  " + Response.data)
-      navigate('/requests/customer/' + customerId)
-    }).catch(e => console.log(e))
+    console.log("car: " + JSON.stringify(car))
+    console.log("customer: " + JSON.stringify(customer))
+
+    if (dateRange[0] === null || dateRange[1] === null) {
+      alert("pls select date")
+    } else {
+      console.log("****************")
+
+      //console.log("date range: " + dateRange[0].format('YYYY-MM-DD') + " to " + dateRange[1].toDate())
+      console.log("request: " + JSON.stringify(request))
+
+
+      RequestService.makeRequest(request).then((Response: any) => {
+        console.log("+++++++++++")
+        console.log("request: " + JSON.stringify(request) + "response data  " + Response.data)
+        navigate('/requests/customer/' + customerId)
+      }).catch(e => console.log(e))
+    }
+
   }
 
 
@@ -75,42 +88,69 @@ const MakeRequestComponent = () => {
 
 
   return (
-    <div>MakeRequestComponent
+    <div className='container'>MakeRequestComponent
 
       <form>
         <h1>Hi, {customer.firstName}, welcome to our car booking service!</h1>
 
-        <div>
+        <div className='container'>
+          <div>
+            <h2>You are booking: {car.brand} - {car.model}</h2>
+            {/*   <input type="text" placeholder="input date created" onChange={e => setRequest({
 
-          <h2>Car: {car.brand} - {car.model}</h2>
+              status: 'SUBMITTED',
+              dateCreated: e.target.value,
+              startDate: '2020-10-05',
+              endDate: '2020-11-06'
 
+            })} ></input> */}
+          </div>
+
+          <div> Select Date Range
+            <BasicDateRangePicker dateRangeChild={dateRange} carChild={car} customerChild={customer} setDateRangeChild={setDateRange} setRequestChild={setRequest} />
+          </div>
         </div>
-        <div> Select Date Range
-        <BasicDateRangePicker dateRangeChild = {dateRange} setDateRangeChild = {setDateRange}/>
-        </div>
-        
 
         <button className='btn btn-primary' onClick={submitChange} >Submit</button>
 
       </form>
     </div>
   )
+
 }
 
 
-
-export function BasicDateRangePicker(props:any) {
-  
-
+export function BasicDateRangePicker(props: any) {
+// this function copied from MUI X
   return (
     <LocalizationProvider
       dateAdapter={AdapterDayjs}
       localeText={{ start: 'Start Date', end: 'End Date' }}
     >
       <DateRangePicker
-        value={props.dateRangeChild}
-        onChange={(newValue) => {
+        value={props.dateRangeChild} //the original code, actually this isn't used. I used newValue directly.
+        onChange={(newValue: DateRange<Dayjs>) => {
           props.setDateRangeChild(newValue);
+          if (newValue[0] !== null && newValue[1] !== null) {
+            console.log("hi---------")
+            props.setRequestChild({
+
+              status: 'SUBMITTED',
+              dateCreated: new Date().toLocaleDateString('en-CA'), // it works for Date class
+              // dateCreated: new Date().format('YYYY-MM-DD') //it doesn't work for Date class
+
+              startDate: newValue[0].format('YYYY-MM-DD'), // it works for Dayjs class
+              endDate: newValue[1].format('YYYY-MM-DD'), // it works for Dayjs class
+              // startDate: newValue[0].toLocaleDateString('en-CA'), // it doesn't work for Dayjs class
+              //endDate: newValue[1].toLocaleDateString('en-CA'),// it doesn't work for Dayjs class
+              /*  dateCreated:"10-03-2025",
+                  startDate: "2025/10/01",
+                  endDate:"10/11/2022", all will give wrong!! coz localdate in Java is defined as YYYY-MM-DD */
+              "car": props.carChild,
+              "customer": props.customerChild
+
+            })
+          }
         }}
         renderInput={(startProps, endProps) => (
           <React.Fragment>
@@ -125,3 +165,4 @@ export function BasicDateRangePicker(props:any) {
 }
 
 export default MakeRequestComponent;
+
