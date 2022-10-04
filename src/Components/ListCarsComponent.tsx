@@ -1,6 +1,8 @@
 import CarService from "../services/CarService";
 import { Link, useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
+import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
 import Car from "./Interfaces";
 
 const ListCarsComponent = () => {
@@ -17,7 +19,11 @@ const ListCarsComponent = () => {
             } else {
                 readAllCars();
             }
-        }).catch((e: string) => console.log(e));// CAN'T pass {id} to the function
+        }).catch((e: any) => {
+            alert(e.response.data)
+            console.log(e);
+        }            
+        );// CAN'T pass {id} to the function
 
     }
 
@@ -26,7 +32,11 @@ const ListCarsComponent = () => {
             .then((Response: any) => {
                 setCarsList(Response.data)
                 console.log("carsList: " + carsList + " response data: " + Response.data)
-            }).catch((e: string) => { console.log(e) })
+            }).catch((e: any) => {
+                alert(e.response.data)
+                console.log(e);
+            }            
+            )
     }
 
     const readAllCars = () => {
@@ -34,7 +44,11 @@ const ListCarsComponent = () => {
             .then((Response: any) => {
                 setCarsList(Response.data)
                 console.log("carsList: " + carsList + " response data: " + Response.data)
-            }).catch((e: string) => { console.log(e) })
+            }).catch((e: any) => {
+                alert(e.response.data)
+                console.log(e);
+            }            
+            )
     }
 
     useEffect(() => {
@@ -47,9 +61,13 @@ const ListCarsComponent = () => {
 
     return (
         <div className="container">
+            {!available && <Link className="btn btn-primary" to={"/add-car"}>Add New Car</Link>}
+            <div id="alert"></div>
+
             <table className="table table-striped">
                 <thead>
                     <tr> <th scope="col">#</th>
+                        <th>Car Id</th>
                         <th>Year</th>
                         <th>Brand</th>
                         <th>Model</th>
@@ -68,15 +86,22 @@ const ListCarsComponent = () => {
                                     //or use && in {}
                                     <tr key={car.id}>
                                         <th scope="row">{++tableRow}</th>
+                                        <td>{car.id}</td>
                                         <td>{car.year}</td>
                                         <td>{car.brand}</td>
                                         <td>{car.model}</td>
                                         <td>{car.price}</td>
-                                        <td>                                            
+                                        <td>
                                             {(available) && <Link className="btn btn-success" to={`/make-request/${car.id}/${customerId}`} >Request</Link>}
-                                            {(!available) && <Link className="btn btn-primary" to={`/save-car/${car.id}`}>Update</Link>}
-                                           <>{available? <></> : <button className="btn btn-danger" onClick={() => { if (car.id) { deletion(car.id) } }} >Delete</button>}</> 
-                         
+
+                                            {(!available) && <Link className="btn btn-primary" to={`/update-car/${car.id}`}>Update</Link>}
+
+                                            {!available && <button className="btn btn-danger" onClick={() => {
+                                                if (car.id) {
+                                                    deletion(car.id)
+                                                }
+                                            }} >Delete</button>}
+
                                         </td>
                                     </tr>)
                             }

@@ -60,8 +60,12 @@ const MakeRequestComponent = () => {
       RequestService.makeRequest(request).then((Response: any) => {
         console.log("+++++++++++")
         console.log("request: " + JSON.stringify(request) + "response data  " + Response.data)
-        navigate('/requests/customer/' + customerId)
-      }).catch(e => console.log(e))
+        navigate('/all-requests/customer/' + customerId)
+      }).catch((e: any) => {
+        alert(e.response.data)
+        console.log(e);
+      }
+      )
     }
 
   }
@@ -72,7 +76,11 @@ const MakeRequestComponent = () => {
       CarService.getCarById(parseInt(carId)).then((Response: any) => {
         setCar(Response.data);// it's not good to set the car obj of request here, if the below CustomerService did the same thing
         console.log("+++car: " + JSON.stringify(car) + " response data: " + Response.data)
-      }).catch((e: string) => console.log(e))
+      }).catch((e: any) => {
+        alert(e.response.data)
+        console.log(e);
+      }
+      )
     }
 
     if (customerId) {
@@ -80,8 +88,11 @@ const MakeRequestComponent = () => {
         setCustomer(Response.data);// it's not good to set the customer obj of request here, if the above CarService did the same thing. 
         //Why? Two async fucntion modifying the same state isn't a good idea, I believe
         console.log("+++customer: " + JSON.stringify(customer) + " response data: " + Response.data)
-      }).catch((e: string) => console.log(e))
-
+      }).catch((e: any) => {
+        alert(e.response.data)
+        console.log(e);
+      }
+      )
     }
   }, [])
 
@@ -121,7 +132,7 @@ const MakeRequestComponent = () => {
 
 
 export function BasicDateRangePicker(props: any) {
-// this function copied from MUI X
+  // this function copied from MUI X
   return (
     <LocalizationProvider
       dateAdapter={AdapterDayjs}

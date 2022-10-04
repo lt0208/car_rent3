@@ -11,16 +11,18 @@ class RequestService {
         return axios.get(REQUESTS_REST_API_URL + "/submitted")
     }
 
-    getRequestsOfCustomer(id:number) {
+    getRequestsOfCustomer(id: number) {
         return axios.get(REQUESTS_REST_API_URL + "/customer/" + id) // You CAN'T wrap id with {},and CAN'T pass {id} either
     }
 
-    makeRequest(request:any) {
+    makeRequest(request: any) {
         return axios.post(REQUESTS_REST_API_URL + "/make", request)
     }
 
-    handleRequest(id:number, updatedStatus: Request) {
-        return axios.put(REQUESTS_REST_API_URL + "/handle/" + id, updatedStatus) // You CAN'T wrap id with {},and CAN'T pass {id} either
+    handleRequest(requestId: number, statusId: number) { 
+        console.log("++id: " + requestId + " ++statusID: " + statusId)
+        return axios.put(REQUESTS_REST_API_URL + "/handle/" + requestId + "/" + statusId) // You CAN'T wrap id with {},and CAN'T pass {id} either
+        // Note: it's difficult to pass a enum parameter, so I modify the backend code to let it take int statusId as path variable!!
     }
 
 }
